@@ -1,6 +1,6 @@
 govindalu-client
 ----------------
-Go client for vindalu
+Go vindalu client
 
 Usage
 -----
