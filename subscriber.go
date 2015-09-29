@@ -10,8 +10,6 @@ import (
 type VindaluSubscriber struct {
 	conn   *nats.Conn
 	enConn *nats.EncodedConn
-	// We do not want to allow writing to the channel
-	//unwritableChan chan *events.Event
 }
 
 func NewVindaluSubscriber(servers []string, logger *log.Logger) (vs *VindaluSubscriber, err error) {
@@ -40,14 +38,23 @@ func NewVindaluSubscriber(servers []string, logger *log.Logger) (vs *VindaluSubs
 
 func (vs *VindaluSubscriber) Subscribe(topic string) (ch chan *events.Event, err error) {
 	// Goes no where as we do not want to allow writing (i.e publishing)
-	if err = vs.enConn.BindSendChan(topic, make(chan *events.Event)); err != nil {
-		return
-	}
+	//if err = vs.enConn.BindSendChan(topic, make(chan *events.Event)); err != nil {
+	//	return
+	//}
 
 	ch = make(chan *events.Event)
-	if _, err = vs.enConn.BindRecvChan(topic, ch); err != nil {
-		return
-	}
+	_, err = vs.enConn.BindRecvChan(topic, ch)
+	return
+}
+
+func (vs *VindaluSubscriber) SubscribeQueueGroup(topic, qGroup string) (ch chan *events.Event, err error) {
+	// Goes no where as we do not want to allow writing (i.e publishing)
+	//if err = vs.enConn.BindSendChan(topic, make(chan *events.Event)); err != nil {
+	//	return
+	//}
+
+	ch = make(chan *events.Event)
+	_, err = vs.enConn.BindRecvQueueChan(topic, qGroup, ch)
 	return
 }
 
