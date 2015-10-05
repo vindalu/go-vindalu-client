@@ -62,6 +62,30 @@ func (c *Client) Get(atype, id string, version int64) (ba store.BaseAsset, err e
 	return
 }
 
+func (c *Client) List(atype string, count int64) (ba []store.BaseAsset, err error) {
+	var (
+		resp   *http.Response
+		b      []byte
+		opaque = c.getOpaque(atype)
+	)
+
+	//if version != 0 {
+	//	opaque = fmt.Sprintf("%s?version=%d", opaque, version)
+	//}
+
+	if resp, b, err = c.doRequest("GET", opaque, nil); err != nil {
+		return
+	}
+
+	if resp.StatusCode != 200 {
+		err = fmt.Errorf("%s - %s", resp.Status, b)
+		return
+	}
+
+	err = json.Unmarshal(b, &ba)
+	return
+}
+
 func (c *Client) GetVersions(atype, id string) (versions []store.BaseAsset, err error) {
 	var (
 		resp   *http.Response

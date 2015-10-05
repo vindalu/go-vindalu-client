@@ -64,6 +64,15 @@ func Test_Get_version(t *testing.T) {
 	t.Logf("%v", ba)
 }
 
+func Test_List(t *testing.T) {
+
+	ba, err := testClient.List(testAType, 100)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+	t.Logf("%v", ba)
+}
+
 func Test_Delete(t *testing.T) {
 	id, err := testClient.Delete(testAType, testId)
 	if err != nil {
