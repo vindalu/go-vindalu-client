@@ -62,7 +62,7 @@ func (c *Client) Get(atype, id string, version int64) (ba store.BaseAsset, err e
 	return
 }
 
-func (c *Client) List(atype string, count int64) (ba []store.BaseAsset, err error) {
+func (c *Client) List(atype string, queryParams map[string]string, count int64) (ba []store.BaseAsset, err error) {
 	var (
 		resp   *http.Response
 		b      []byte
@@ -72,6 +72,18 @@ func (c *Client) List(atype string, count int64) (ba []store.BaseAsset, err erro
 	//if version != 0 {
 	//	opaque = fmt.Sprintf("%s?version=%d", opaque, version)
 	//}
+
+    if len(queryParams) != 0 {
+        first := true
+        for k,v := range queryParams {
+            if first {
+                opaque = fmt.Sprintf("%s?%s=%s", opaque, k, v)
+                first = false
+            } else {
+                opaque = fmt.Sprintf("%s&%s=%s", opaque, k, v)
+            }
+        }
+    }
 
 	if resp, b, err = c.doRequest("GET", opaque, nil); err != nil {
 		return
