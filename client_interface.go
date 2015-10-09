@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+    "strings"
 
 	"github.com/euforia/vindaloo/store"
 )
@@ -139,7 +140,7 @@ func (c *Client) GetVersionDiffs(atype, id string) (diffs []interface{}, err err
 	return
 }
 
-func (c *Client) Update(atype, id string, data interface{}) (updated map[string]string, err error) {
+func (c *Client) Update(atype, id string, data interface{}, deletedFields ...string) (updated map[string]string, err error) {
 	var (
 		resp  *http.Response
 		b     []byte
@@ -155,7 +156,12 @@ func (c *Client) Update(atype, id string, data interface{}) (updated map[string]
 		return
 	}
 
-	if resp, b, err = c.doRequest("PUT", c.getOpaque(atype, id), udata); err != nil {
+    urlPath := c.getOpaque(atype, id)
+    if len(deletedFields) > 0 {
+        urlPath = urlPath + "?delete_fields=" + strings.Join(deletedFields, ",")
+    }
+
+	if resp, b, err = c.doRequest("PUT", urlPath, udata); err != nil {
 		return
 	}
 
