@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/euforia/vindaloo/config"
+	"github.com/vindalu/vindalu/config"
 )
 
 const CREDS_CONF = ".vindalu/credentials"

@@ -6,7 +6,7 @@ import (
 	"net/http"
     "strings"
 
-	"github.com/euforia/vindaloo/store"
+	"github.com/vindalu/vindalu/core"
 )
 
 func (c *Client) Create(atype, id string, data interface{}) (created map[string]string, err error) {
@@ -39,7 +39,7 @@ func (c *Client) Create(atype, id string, data interface{}) (created map[string]
 	return
 }
 
-func (c *Client) Get(atype, id string, version int64) (ba store.BaseAsset, err error) {
+func (c *Client) Get(atype, id string, version int64) (ba core.BaseAsset, err error) {
 	var (
 		resp   *http.Response
 		b      []byte
@@ -63,7 +63,7 @@ func (c *Client) Get(atype, id string, version int64) (ba store.BaseAsset, err e
 	return
 }
 
-func (c *Client) List(atype string, queryParams map[string]string, count int64) (ba []store.BaseAsset, err error) {
+func (c *Client) List(atype string, queryParams map[string]string, count int64) (ba []core.BaseAsset, err error) {
 	var (
 		resp   *http.Response
 		b      []byte
@@ -99,7 +99,7 @@ func (c *Client) List(atype string, queryParams map[string]string, count int64) 
 	return
 }
 
-func (c *Client) GetVersions(atype, id string) (versions []store.BaseAsset, err error) {
+func (c *Client) GetVersions(atype, id string) (versions []core.BaseAsset, err error) {
 	var (
 		resp   *http.Response
 		b      []byte
@@ -195,7 +195,7 @@ func (c *Client) Delete(atype, id string) (deleted map[string]string, err error)
 	return
 }
 
-func (c *Client) GetTypes() (aggrs []store.AggregatedItem, err error) {
+func (c *Client) GetTypes() (aggrs []core.AggregatedItem, err error) {
 	var (
 		b    []byte
 		resp *http.Response
@@ -210,7 +210,7 @@ func (c *Client) GetTypes() (aggrs []store.AggregatedItem, err error) {
 		return
 	}
 
-	aggrs = []store.AggregatedItem{}
+	aggrs = []core.AggregatedItem{}
 	err = json.Unmarshal(b, &aggrs)
 	return
 }

@@ -4,7 +4,7 @@ import (
 	log "github.com/euforia/simplelog"
 	"github.com/nats-io/nats"
 
-	"github.com/euforia/vindaloo/events"
+	"github.com/vindalu/vindalu/events"
 )
 
 type VindaluSubscriber struct {
