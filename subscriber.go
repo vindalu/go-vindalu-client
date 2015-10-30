@@ -4,7 +4,7 @@ import (
 	log "github.com/euforia/simplelog"
 	"github.com/nats-io/nats"
 
-	"github.com/vindalu/vindalu/events"
+	"github.com/vindalu/vindalu/core"
 )
 
 type VindaluSubscriber struct {
@@ -36,24 +36,24 @@ func NewVindaluSubscriber(servers []string, logger *log.Logger) (vs *VindaluSubs
 	return
 }
 
-func (vs *VindaluSubscriber) Subscribe(topic string) (ch chan *events.Event, err error) {
+func (vs *VindaluSubscriber) Subscribe(topic string) (ch chan *core.Event, err error) {
 	// Goes no where as we do not want to allow writing (i.e publishing)
-	//if err = vs.enConn.BindSendChan(topic, make(chan *events.Event)); err != nil {
+	//if err = vs.enConn.BindSendChan(topic, make(chan *core.Event)); err != nil {
 	//	return
 	//}
 
-	ch = make(chan *events.Event)
+	ch = make(chan *core.Event)
 	_, err = vs.enConn.BindRecvChan(topic, ch)
 	return
 }
 
-func (vs *VindaluSubscriber) SubscribeQueueGroup(topic, qGroup string) (ch chan *events.Event, err error) {
+func (vs *VindaluSubscriber) SubscribeQueueGroup(topic, qGroup string) (ch chan *core.Event, err error) {
 	// Goes no where as we do not want to allow writing (i.e publishing)
-	//if err = vs.enConn.BindSendChan(topic, make(chan *events.Event)); err != nil {
+	//if err = vs.enConn.BindSendChan(topic, make(chan *core.Event)); err != nil {
 	//	return
 	//}
 
-	ch = make(chan *events.Event)
+	ch = make(chan *core.Event)
 	_, err = vs.enConn.BindRecvQueueChan(topic, qGroup, ch)
 	return
 }
