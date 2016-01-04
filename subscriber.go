@@ -1,10 +1,10 @@
 package vindalu
 
 import (
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 
 	log "github.com/euforia/simplelog"
 	"github.com/nats-io/nats"
@@ -47,8 +47,8 @@ func NewVindaluSubscriber(server string, logger *log.Logger) (vs *VindaluSubscri
 func GetNatsServers(server string) (natsServers []string, err error) {
 	var (
 		clusterStatus *core.VindaluClusterStatus
-		resp *http.Response
-		body []byte
+		resp          *http.Response
+		body          []byte
 	)
 	resp, err = http.Get(server + "/status")
 	if err != nil {
@@ -67,10 +67,6 @@ func GetNatsServers(server string) (natsServers []string, err error) {
 }
 
 func (vs *VindaluSubscriber) Subscribe(topic string) (ch chan *core.Event, err error) {
-	// Goes no where as we do not want to allow writing (i.e publishing)
-	//if err = vs.enConn.BindSendChan(topic, make(chan *core.Event)); err != nil {
-	//	return
-	//}
 
 	ch = make(chan *core.Event)
 	_, err = vs.enConn.BindRecvChan(topic, ch)
@@ -78,10 +74,6 @@ func (vs *VindaluSubscriber) Subscribe(topic string) (ch chan *core.Event, err e
 }
 
 func (vs *VindaluSubscriber) SubscribeQueueGroup(topic, qGroup string) (ch chan *core.Event, err error) {
-	// Goes no where as we do not want to allow writing (i.e publishing)
-	//if err = vs.enConn.BindSendChan(topic, make(chan *core.Event)); err != nil {
-	//	return
-	//}
 
 	ch = make(chan *core.Event)
 	_, err = vs.enConn.BindRecvQueueChan(topic, qGroup, ch)
