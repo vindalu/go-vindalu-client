@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-    "strings"
+	"strings"
 
 	"github.com/vindalu/vindalu/core"
 )
@@ -63,30 +63,33 @@ func (c *Client) Get(atype, id string, version int64) (ba core.BaseAsset, err er
 	return
 }
 
-func (c *Client) List(atype string, queryParams map[string]string, count int64) (ba []core.BaseAsset, err error) {
+func (c *Client) List(atype string, queryParams map[string]string, queryBody map[string]interface{}) (ba []core.BaseAsset, err error) {
 	var (
 		resp   *http.Response
 		b      []byte
 		opaque = c.getOpaque(atype)
 	)
 
-	//if version != 0 {
-	//	opaque = fmt.Sprintf("%s?version=%d", opaque, version)
-	//}
+	if queryParams != nil && len(queryParams) > 0 {
+		first := true
+		for k, v := range queryParams {
+			if first {
+				opaque = fmt.Sprintf("%s?%s=%s", opaque, k, v)
+				first = false
+			} else {
+				opaque = fmt.Sprintf("%s&%s=%s", opaque, k, v)
+			}
+		}
+	}
 
-    if len(queryParams) != 0 {
-        first := true
-        for k,v := range queryParams {
-            if first {
-                opaque = fmt.Sprintf("%s?%s=%s", opaque, k, v)
-                first = false
-            } else {
-                opaque = fmt.Sprintf("%s&%s=%s", opaque, k, v)
-            }
-        }
-    }
+	var body []byte = nil
+	if queryBody != nil && len(queryBody) > 0 {
+		if body, err = json.Marshal(queryBody); err != nil {
+			return
+		}
+	}
 
-	if resp, b, err = c.doRequest("GET", opaque, nil); err != nil {
+	if resp, b, err = c.doRequest("GET", opaque, body); err != nil {
 		return
 	}
 
@@ -156,10 +159,10 @@ func (c *Client) Update(atype, id string, data interface{}, deletedFields ...str
 		return
 	}
 
-    urlPath := c.getOpaque(atype, id)
-    if len(deletedFields) > 0 {
-        urlPath = urlPath + "?delete_fields=" + strings.Join(deletedFields, ",")
-    }
+	urlPath := c.getOpaque(atype, id)
+	if len(deletedFields) > 0 {
+		urlPath = urlPath + "?delete_fields=" + strings.Join(deletedFields, ",")
+	}
 
 	if resp, b, err = c.doRequest("PUT", urlPath, udata); err != nil {
 		return

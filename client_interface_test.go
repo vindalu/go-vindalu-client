@@ -66,7 +66,7 @@ func Test_Get_version(t *testing.T) {
 
 func Test_List(t *testing.T) {
 
-	ba, err := testClient.List(testAType, 100)
+	ba, err := testClient.List(testAType, nil, nil)
 	if err != nil {
 		t.Fatalf("%s", err)
 	}
