@@ -224,7 +224,7 @@ func (c *Client) ListTypeProperties(atype string) (props []string, err error) {
 		resp *http.Response
 	)
 
-	if resp, b, err = c.doRequest("GET", c.getOpaque(atype,"/properties"), nil); err != nil {
+	if resp, b, err = c.doRequest("GET", c.getOpaque(atype,"properties"), nil); err != nil {
 		return
 	}
 
