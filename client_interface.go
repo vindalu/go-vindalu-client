@@ -219,13 +219,12 @@ func (c *Client) GetTypes() (aggrs []core.AggregatedItem, err error) {
 }
 
 func (c *Client) ListTypeProperties(atype string) (props []string, err error) {
-	ptype := atype + "/properties"
 	var (
 		b    []byte
 		resp *http.Response
 	)
 
-	if resp, b, err = c.doRequest("GET", c.getOpaque(ptype), nil); err != nil {
+	if resp, b, err = c.doRequest("GET", c.getOpaque(atype,"/properties"), nil); err != nil {
 		return
 	}
 
