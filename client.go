@@ -30,25 +30,29 @@ func NewClient(url string) (c *Client, err error) {
 	return
 }
 
+func (c *Client) SetCredentials(user string, pass string) {
+	c.creds = Credentials{user, pass, ""}
+}
+
 func (c *Client) loadUserConfig() (err error) {
 	if c.Config, err = c.getConfig(); err != nil {
 		return
 	}
 
 	var b []byte
-	if b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF); err != nil {
-		return
-	}
+	b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF)
+	if err == nil {
 
-	var v struct {
-		Auth Credentials `json:"auth"`
-	}
+		var v struct {
+			Auth Credentials `json:"auth"`
+		}
 
-	if err = json.Unmarshal(b, &v); err != nil {
-		return
-	}
+		if err = json.Unmarshal(b, &v); err != nil {
+			return
+		}
 
-	c.creds = v.Auth
+		c.creds = v.Auth
+	}
 	return
 }
 
