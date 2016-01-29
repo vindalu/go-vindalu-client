@@ -26,8 +26,10 @@ type Client struct {
 
 func NewClient(url string) (c *Client, err error) {
 	c = &Client{Url: url}
-	if _, ok := os.Stat(os.Getenv("HOME") + "/" + CREDS_CONF); ok == nil {
-		err = c.loadUserConfig()
+	if err = c.loadConfig(); err == nil {
+		if _, ok := os.Stat(os.Getenv("HOME") + "/" + CREDS_CONF); ok == nil {
+			err = c.loadCredConf()
+		}
 	}
 	return
 }
@@ -36,19 +38,21 @@ func (c *Client) SetCredentials(user string, pass string) {
 	c.creds = Credentials{user, pass, ""}
 }
 
-func (c *Client) loadUserConfig() (err error) {
-	if c.Config, err = c.getConfig(); err == nil {
+func (c *Client) loadConfig() (err error) {
+	c.Config, err = c.getConfig()
+	return
+}
 
-		var b []byte
-		b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF)
-		if err == nil {
-			var v struct {
-				Auth Credentials `json:"auth"`
-			}
+func (c *Client) loadCredConf() (err error) {
+	var b []byte
+	b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF)
+	if err == nil {
+		var v struct {
+			Auth Credentials `json:"auth"`
+		}
 
-			if err = json.Unmarshal(b, &v); err == nil {
-				c.creds = v.Auth
-			}
+		if err = json.Unmarshal(b, &v); err == nil {
+			c.creds = v.Auth
 		}
 	}
 	return
