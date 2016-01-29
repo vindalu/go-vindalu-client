@@ -26,7 +26,9 @@ type Client struct {
 
 func NewClient(url string) (c *Client, err error) {
 	c = &Client{Url: url}
-	err = c.loadUserConfig()
+	if _, ok := os.Stat(os.Getenv("HOME") + "/" + CREDS_CONF); ok == nil {
+		err = c.loadUserConfig()
+	}
 	return
 }
 
