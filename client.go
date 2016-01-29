@@ -35,23 +35,19 @@ func (c *Client) SetCredentials(user string, pass string) {
 }
 
 func (c *Client) loadUserConfig() (err error) {
-	if c.Config, err = c.getConfig(); err != nil {
-		return
-	}
+	if c.Config, err = c.getConfig(); err == nil {
 
-	var b []byte
-	b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF)
-	if err == nil {
+		var b []byte
+		b, err = ioutil.ReadFile(os.Getenv("HOME") + "/" + CREDS_CONF)
+		if err == nil {
+			var v struct {
+				Auth Credentials `json:"auth"`
+			}
 
-		var v struct {
-			Auth Credentials `json:"auth"`
+			if err = json.Unmarshal(b, &v); err == nil {
+				c.creds = v.Auth
+			}
 		}
-
-		if err = json.Unmarshal(b, &v); err != nil {
-			return
-		}
-
-		c.creds = v.Auth
 	}
 	return
 }
@@ -65,41 +61,34 @@ func (c *Client) doRequest(method, urlpath string, body []byte) (resp *http.Resp
 		req, err = http.NewRequest(method, c.Url+urlpath, nil)
 	}
 
-	if err != nil {
-		return
-	}
-
-	switch method {
-	case "PUT", "POST", "DELETE":
-		if len(c.creds.Token) > 0 {
-			req.Header.Set("Authorization", "BEARER "+c.creds.Token)
-		} else {
-			req.SetBasicAuth(c.creds.Username, c.creds.Password)
+	if err == nil {
+		switch method {
+		case "PUT", "POST", "DELETE":
+			if len(c.creds.Token) > 0 {
+				req.Header.Set("Authorization", "BEARER "+c.creds.Token)
+			} else {
+				req.SetBasicAuth(c.creds.Username, c.creds.Password)
+			}
+			break
+		default:
+			break
 		}
-		break
-	default:
-		break
+
+		if resp, err = http.DefaultClient.Do(req); err == nil {
+			defer resp.Body.Close()
+
+			b, err = ioutil.ReadAll(resp.Body)
+		}
 	}
-
-	if resp, err = http.DefaultClient.Do(req); err != nil {
-		return
-	}
-
-	defer resp.Body.Close()
-
-	b, err = ioutil.ReadAll(resp.Body)
-
 	return
 }
 
 func (c *Client) getConfig() (cfg *config.ClientConfig, err error) {
 	var b []byte
-	if _, b, err = c.doRequest("GET", "/config", nil); err != nil {
-		return
+	if _, b, err = c.doRequest("GET", "/config", nil); err == nil {
+		cfg = &config.ClientConfig{}
+		err = json.Unmarshal(b, cfg)
 	}
-
-	cfg = &config.ClientConfig{}
-	err = json.Unmarshal(b, cfg)
 	return
 }
 
